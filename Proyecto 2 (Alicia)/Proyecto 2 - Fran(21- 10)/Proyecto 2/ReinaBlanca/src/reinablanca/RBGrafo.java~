@@ -1,0 +1,407 @@
+/*
+ * Arleyn Goncalves
+ * Francisco Sucre
+ * Proyecto 2 De Laboratorio Algoritmos 3
+ * Servicio Alicia
+ * Clase RBGrafo
+ */
+
+package reinablanca;
+
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileReader;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.HashSet;
+import java.util.List;
+import java.util.PriorityQueue;
+
+/**
+ *
+ * @author franciscosucre
+ */
+     class RBGrafo
+    {
+
+        // STATES
+        
+        private String nombre_;
+        private HashSet<Nodo> hojas_;        
+        private HashSet<Arista> aristas_;
+        
+        // CONSTRUCTORS.
+        
+        public RBGrafo(HashSet<Nodo> hojas,HashSet<Arista> aristas)
+                
+        // Constructor con 2 argumentos que forma un grafo con un conjunto de 
+        // aristas y una lista de nodos que pertenecen a el                
+        
+        {
+            aristas_ = aristas;    
+            hojas_ = hojas; // Agregamos los nodos
+        }
+        
+        
+        public RBGrafo()
+                
+        // Constructor que no recibe argumentos y forma un grafo vacio   
+                
+        {
+
+            hojas_ = new HashSet<>(); // Inicializamos el conjunto de nodos en el
+                                    // grafo como un HashSet vacio
+            aristas_ = new HashSet<Arista>();
+            
+        }
+        
+        public RBGrafo(Nodo nodoNuevo)
+                
+        // Constructor que no recibe argumentos y forma un grafo vacio   
+                
+        {
+
+            hojas_ = new HashSet<>(); // Inicializamos el conjunto de nodos en el
+                                      // grafo como un HashSet vacio
+            hojas_.add(nodoNuevo);
+            aristas_ = new HashSet<Arista>();
+            
+        }        
+
+        // GETTERS.
+        
+        public HashSet <Nodo> obtenerNodos() 
+                
+        // Metodo que obtiene el conjunto de nodos en el grafo, asi pueden 
+        // usarse o guardarse                
+                
+        {
+            
+            return hojas_; // Retorna el conjunto de los nodos del grafo
+                
+        }    
+
+        public HashSet <Arista> obtenerAristas() 
+                
+        // Metodo que obtiene el conjunto de nodos en el grafo, asi pueden 
+        // usarse o guardarse                
+                
+        {
+            
+            return aristas_; // Retorna el conjunto de los nodos del grafo
+                
+        }
+        
+        // SETTERS.   
+
+        public RBGrafo agregarNodo(Nodo hoja)
+                
+        // Metodo que agrega un nodo al conjunto de nodos del grafo  
+                
+        {
+            hojas_.add(hoja);   // Agregamos el nodo
+            boolean repetido;   // Variable para examinar si hay otro nodo con
+                                // el mismo nombre en el grafo
+            return this;
+                
+        }      
+        
+        public RBGrafo removerNodo(Nodo hoja)
+                
+        // Metodo que remueve un nodo del conjunto de nodos del grafo  
+                
+        {
+            
+            hojas_.remove(hoja); // Removemos el nodo
+            return this;
+                
+        } 
+          
+        
+        // COMPLEX METHODS.        
+       
+    public RBGrafo leerArbolRB(String archivoEntrada)
+      throws IOException 
+    
+    {
+        int i;
+        Nodo[] nodosAgre = new Nodo[50];
+        File file = new File (archivoEntrada);
+        FileReader fileReader = new FileReader(file);
+        
+           try (BufferedReader in = new BufferedReader(fileReader)) 
+            {
+                String s;
+                String[] palabras;
+                int localidades;
+                int linea;
+                HashSet<Nodo> conexion = new HashSet<Nodo>();
+                Boolean repetida;
+                repetida = false;
+
+                
+                s = in.readLine();
+                localidades = (new Integer(s));
+                
+                
+                for(i = 0; i < localidades; i++)
+                    
+                {
+                    
+                    nodosAgre[i] =(new Nodo(("localidad " + (
+                            new Integer(i + 1)).toString())));
+                    
+                }       
+                
+                linea = 0;
+                
+                while ((s = in.readLine()) != null )
+                    
+                {
+                    
+                    palabras = s.split("");
+                    
+                    for(i = 0; i < palabras.length; i++)
+                        
+                    {
+                        
+                        if (!(palabras[i].equals(".")) && !(palabras[i].
+                                equals("0")) && (i != linea))
+                        
+                        {
+                            
+                            conexion.add(nodosAgre[linea]);
+                            conexion.add(nodosAgre[i]);
+                            
+                            // Si quiero contar los bucles como adyacencias
+                            // ponemos 
+                            // nodosAgre[linea].agregarAdyacente(conexiones);
+                            
+                            nodosAgre[linea].agregarAdyacente(nodosAgre[i]);
+                            
+                            nodosAgre[linea].agregarArista(new Arista(
+                                    (new Integer(palabras[i])),
+                                    conexion));
+                            Arista verifica;
+                            verifica = (new Arista((new Integer(palabras[i])),
+                                    conexion));
+                            
+                            for (Arista arista : aristas_)
+                            
+                            {
+                            
+                                if ((verifica.obtenerCosto().equals(arista.
+                                        obtenerCosto())) && (verifica.
+                                        obtenerIncidentes().equals(
+                                        arista.obtenerIncidentes())))
+                                    
+                                {
+                                
+                                    repetida = true;
+                                    break;
+                                
+                                }
+                                
+                                
+                                if (!((verifica.obtenerCosto().equals(arista.
+                                        obtenerCosto())) && (verifica.
+                                        obtenerIncidentes().equals(arista.
+                                        obtenerIncidentes()))))
+                                    
+                                {
+                                
+                                    repetida = false;
+                                
+                                }                                
+                            }
+                            
+                            if (repetida.equals(false))
+                                
+                            {
+                                aristas_.add(new Arista((new Integer(
+                                palabras[i])), (HashSet<Nodo>) 
+                                        conexion.clone()));   
+                            }
+                            
+
+                            conexion.clear();
+                            this.agregarNodo(nodosAgre[linea]);
+                        }     
+                    }
+                    
+                System.out.println("El nodo " + (linea + 1) + " tiene " +
+                     (nodosAgre[linea].obtenerAristas().size()) + " aristas");        
+                linea = linea + 1;  
+          
+                }     
+            }
+        System.out.println("hay " + aristas_.size() + " aristas");
+        System.out.println("hay " + hojas_.size() + " nodos");    
+        return this;
+    
+    }   
+        
+    
+    public int minimizarMonedas()
+            
+    {
+        
+        /*  Funciona de la siguiente manera:
+
+            1) se crea un bosque B (un conjunto de árboles), donde cada vértice 
+            del grafo es un árbol separado
+            2) se crea un conjunto C que contenga a todas las aristas del grafo
+            mientras C es no vacío
+            3) eliminar una arista de peso mínimo de C
+            4) si esa arista conecta dos árboles diferentes se añade al bosque, 
+            combinando los dos árboles en un solo árbol en caso contrario, se 
+            desecha la arista
+        */
+        
+        HashSet<Arista> aristas = new HashSet<Arista>();  
+        aristas.addAll(aristas_);
+        List<Nodo> nodosConectados = new ArrayList();
+        Arista aristaAgregar;
+        int monedas;
+        monedas = 0;
+        int nivel;
+        nivel = 0;
+        
+        //HashSet<Nodo> nodosConectados = new HashSet<Nodo>();
+        //Nodo[] nodosConectados = new Nodo[hojas_.size() + 1];
+        
+        Comparator<Arista> comparator = new Comparator<Arista>() 
+        
+        {
+
+            @Override
+            public int compare(Arista o1, Arista o2) 
+            {
+                return (o1.obtenerCosto()).compareTo(o2.obtenerCosto());
+            }
+        };
+        
+        
+        PriorityQueue<Arista> cola = new PriorityQueue<Arista>(50, new 
+        Comparator<Arista>()
+        
+        {
+            public int compare(Arista o1, Arista o2) 
+            {
+                return (o1.obtenerCosto()).compareTo(o2.obtenerCosto());
+            }
+            
+        });
+        
+        cola.addAll((HashSet<Arista>) aristas.clone());
+        ConjuntoDisjunto bosqueB = new ConjuntoDisjunto();
+        aristas.clear();
+
+        Nodo[] incidentes; 
+        
+        
+        for (Nodo nodos : hojas_ )
+        
+        {
+            bosqueB.makeSet(nodos);
+        }
+        
+        for (Arista aristas1 : cola)
+        {
+            for (Nodo incidentes1 : aristas1.obtenerIncidentes())
+            {
+                bosqueB.makeSet(incidentes1);
+            }
+        
+        }
+        
+        
+        
+        while (!(cola.isEmpty()))
+        
+        {
+        
+            incidentes = (cola.peek().obtenerIncidentes()).toArray(new Nodo[2]);  
+            System.out.println("El tamaño de la cola es " + cola.size());
+            System.out.println("El costo de la arista actual es " + 
+                    cola.peek().obtenerCosto());
+            System.out.println();
+            System.out.println("Los nodos incidentes a la arista actual son ");
+            System.out.println(incidentes[0].obtenerNombre());
+            System.out.println(incidentes[1].obtenerNombre());
+            System.out.println();
+            System.out.println("El find de cada nodo es ");
+            System.out.println(bosqueB.find(incidentes[0]).obtenerNombre());
+            System.out.println(bosqueB.find(incidentes[1]).obtenerNombre());
+            System.out.println();
+            
+            if (bosqueB.find(incidentes[0]).equals(bosqueB.find(incidentes[1])))
+                
+            {
+            
+                cola.remove();
+                System.out.println("no se agrego nada");
+                
+            }
+            
+            if (!(bosqueB.find(incidentes[0]).equals(
+                    bosqueB.find(incidentes[1]))))
+                
+            {
+                
+                bosqueB.Union(incidentes[0],incidentes[1]);                
+                nodosConectados.add(incidentes[0]);
+                nodosConectados.add(incidentes[1]);
+                aristas.add(cola.poll());
+                System.out.println("SE AGREGO UNA ARISTA");
+                System.out.println();
+                
+            }
+
+        }
+        
+        for (Arista aristas2 : aristas)
+        
+        {
+        
+            monedas = monedas + aristas2.obtenerCosto();
+            
+        }
+        
+        return monedas;
+            
+    }         
+        public void imprimir()
+                
+        // Metodo que imprime todos los nodos del grafo junto con sus conjuntos
+        // de adyacencia                
+                
+        {
+            
+            int i = 0; // Inicio el mensajes para saber cuando estoy en el
+                       // ultimo nodo
+            //System.out.println();
+            //System.out.println("Los Nodos Del grafo son: ");
+            System.out.println();
+            System.out.println("---------------------------");
+            System.out.println();
+            
+            for (Nodo hojas : hojas_) // Recorro todos los nodos del conjunto 
+                                      // ir imprimiendolos 1 a 1
+
+            {
+
+                hojas.imprimir();
+                i = i + 1;
+                       
+            }
+                               
+            System.out.println();
+            System.out.println("---------------------------");
+            System.out.println();
+        
+        }    
+    
+    }
+    

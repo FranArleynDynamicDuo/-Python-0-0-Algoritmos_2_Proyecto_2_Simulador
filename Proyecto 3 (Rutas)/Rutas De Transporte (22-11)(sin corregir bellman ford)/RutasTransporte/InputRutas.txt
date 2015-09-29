@@ -1,0 +1,27 @@
+2
+9 11
+SanRafael 3
+SanFrancisco 2
+PaloAlto 5
+SanJose 3
+SantaCruz 5
+Fremont 20
+Oakland 20
+Berkeley 4
+Sunnyvale 5
+SanRafael SanFrancisco 1
+PaloAlto SanJose 10
+SanJose PaloAlto 2
+SanFrancisco Berkeley 3
+Berkeley SanRafael 6
+Berkeley Oakland 2
+Berkeley Sunnyvale 3
+Sunnyvale SantaCruz 4
+Oakland Fremont 3
+Fremont SanFrancisco 4
+SanJose SantaCruz 5
+2 2
+Caracas 5
+LaGuaira 3
+Caracas LaGuaira 3
+LaGuaira Caracas 2
